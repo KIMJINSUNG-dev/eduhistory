@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.github.kimjinsungdev.eduhistory.edu.service.impl.EduHistoryMapper">
+
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM edu_history
+    </select>
+
+    <insert id="insertAll">
+        INSERT INTO edu_history
+        (trainee_name, edu_start_date, edu_end_date, course_name, institution_name, course_status)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.traineeName}, #{item.eduStartDate}, #{item.eduEndDate},
+            #{item.courseName}, #{item.institutionName}, #{item.courseStatus})
+        </foreach>
+    </insert>
+
+    <select id="selectEduHistoryList"
+            parameterType="io.github.kimjinsungdev.eduhistory.edu.service.EduHistorySearchVO"
+            resultType="io.github.kimjinsungdev.eduhistory.edu.service.EduHistoryVO">
+        SELECT id
+        , trainee_name
+        , edu_start_date
+        , edu_end_date
+        , course_name
+        , institution_name
+        , course_status
+        FROM edu_history
+        <where>
+            <if test="keyword != null">
+                <choose>
+                    <when test='searchType == "course"'>
+                        AND LOWER(course_name) LIKE CONCAT('%', LOWER(#{keyword}), '%')
+                    </when>
+                    <when test='searchType == "institution"'>
+                        AND LOWER(institution_name) LIKE CONCAT('%', LOWER(#{keyword}), '%')
+                    </when>
+                    <otherwise>
+                        AND ( LOWER(course_name) LIKE CONCAT('%', LOWER(#{keyword}), '%')
+                        OR LOWER(institution_name) LIKE CONCAT('%', LOWER(#{keyword}), '%') )
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="fromDate != null and toDate != null">
+                AND edu_start_date &lt;= #{toDate}
+                AND edu_end_date   &gt;= #{fromDate}
+            </if>
+            <if test="status != null">
+                AND course_status = #{status}
+            </if>
+        </where>
+        ORDER BY id
+    </select>
+
+</mapper>
