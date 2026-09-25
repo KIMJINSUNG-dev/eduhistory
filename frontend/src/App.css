@@ -1,0 +1,52 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Malgun Gothic", sans-serif;
+  font-size: 14px;
+  color: #222;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+
+h1 { text-align: center; font-size: 22px; margin-bottom: 20px; }
+
+.search-box {
+  border: 1px solid #ddd;
+  background: #fafafa;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.search-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.search-row:last-child { margin-bottom: 0; }
+
+.search-label { width: 70px; font-weight: bold; }
+.keyword { flex: 1; }
+
+input, select, button { padding: 6px 10px; font-size: 14px; }
+
+.search-button { margin-left: auto; background: #333; color: #fff; border: none; cursor: pointer; }
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.total { font-weight: bold; }
+
+.table-wrapper { max-height: 600px; overflow-y: auto; border: 1px solid #ddd; }
+
+table { width: 100%; border-collapse: collapse; }
+
+th, td { border-bottom: 1px solid #eee; padding: 8px; text-align: center; }
+
+th { background: #333; color: #fff; position: sticky; top: 0; }
+
+.empty { text-align: center; padding: 40px; color: #888; }
+
+.error { color: #c00; padding: 8px 0; }
+
+.loading { text-align: center; padding: 40px; color: #888; }
