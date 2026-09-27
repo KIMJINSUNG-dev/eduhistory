@@ -94,6 +94,16 @@ npm run dev
 브라우저에서 `http://localhost:5173` 으로 접속합니다.
 개발 서버가 `/api` 요청을 `http://localhost:8080` 으로 전달하도록 프록시를 설정해 두었습니다.
 
+### 3. 테스트 실행
+
+```powershell
+cd backend
+.\mvnw.cmd test
+```
+
+검색 조건 검증 로직에 대한 단위 테스트가 실행됩니다.
+스프링 컨텍스트와 DB 연결 없이 동작하므로, MySQL 실행이나 환경변수 설정 없이 확인할 수 있습니다.
+
 ## API
 
 ### 목록 조회
@@ -163,6 +173,7 @@ GET /api/edu-histories/download
   - 시작일과 종료일 중 한쪽만 입력한 경우
   - 존재하지 않는 날짜를 입력한 경우
   - 시작일이 종료일보다 늦은 경우
+- 위 검증 규칙은 단위 테스트(`EduHistoryServiceImplTest`)로 확인할 수 있습니다.
 
 ### 수강상태 검색
 
@@ -222,6 +233,13 @@ API가 직접 호출되는 경우에 대비해 서버에서도 동일하게 검�
 컬럼 추가 · 변경 시 정의 배열만 수정하면 되며, 필드명이 타입과 연결되어 있어
 응답 구조가 변경되면 컴파일 단계에서 확인할 수 있습니다.
 
+### 테스트 구성
+
+검색 조건 검증은 스프링 컨텍스트나 DB 연결 없이 동작하는 단위 테스트로 작성했습니다.
+Mapper는 인터페이스를 직접 구현한 테스트 대역으로 대체해, 서비스가 Mapper에 전달한
+검색 조건까지 확인할 수 있도록 했습니다.
+실행 환경에 의존하지 않으므로 별도 준비 없이 검증할 수 있습니다.
+
 ## 제공 데이터 확인 사항
 
 제공받은 CSV 파일을 적재하기 전에 데이터를 확인한 결과는 다음과 같습니다.
@@ -254,30 +272,33 @@ API가 직접 호출되는 경우에 대비해 서버에서도 동일하게 검�
 ```
 eduhistory
 ├── backend
-│   └── src/main
-│       ├── java/io/github/kimjinsungdev/eduhistory
-│       │   ├── EduhistoryApplication.java
-│       │   ├── common                      # 예외 클래스, 전역 예외 처리
-│       │   └── edu
-│       │       ├── code                    # 검색 구분 · 수강상태 정의
-│       │       ├── service                 # 서비스 인터페이스, VO, 응답 객체
-│       │       │   └── impl                # 서비스 구현, Mapper, 초기 데이터 적재
-│       │       └── web                     # API 컨트롤러
-│       └── resources
-│           ├── data                        # 초기 데이터 CSV
-│           ├── mapper                      # MyBatis Mapper XML
-│           ├── schema.sql                  # 테이블 생성 스크립트
-│           └── application.yaml
+│   └── src
+│       ├── main
+│       │   ├── java/io/github/kimjinsungdev/eduhistory
+│       │   │   ├── EduhistoryApplication.java
+│       │   │   ├── common                      # 예외 클래스, 전역 예외 처리
+│       │   │   └── edu
+│       │   │       ├── code                    # 검색 구분 · 수강상태 정의
+│       │   │       ├── service                 # 서비스 인터페이스, VO, 응답 객체
+│       │   │       │   └── impl                # 서비스 구현, Mapper, 초기 데이터 적재
+│       │   │       └── web                     # API 컨트롤러
+│       │   └── resources
+│       │       ├── data                        # 초기 데이터 CSV
+│       │       ├── mapper                      # MyBatis Mapper XML
+│       │       ├── schema.sql                  # 테이블 생성 스크립트
+│       │       └── application.yaml
+│       └── test/java/io/github/kimjinsungdev/eduhistory
+│           └── edu/service/impl                # 검색 조건 검증 단위 테스트
 └── frontend
     ├── index.html
-    ├── vite.config.ts                      # 개발 서버 프록시 설정
+    ├── vite.config.ts                          # 개발 서버 프록시 설정
     └── src
-        ├── main.tsx                        # 애플리케이션 진입점
-        ├── App.tsx                         # 검색 조건 · 조회 결과 상태 관리
-        ├── SearchForm.tsx                  # 검색 폼
-        ├── EduHistoryTable.tsx             # 목록 테이블
-        ├── api.ts                          # API 호출
-        ├── columns.ts                      # 목록 컬럼 정의
-        ├── types.ts                        # 타입 정의
+        ├── main.tsx                            # 애플리케이션 진입점
+        ├── App.tsx                             # 검색 조건 · 조회 결과 상태 관리
+        ├── SearchForm.tsx                      # 검색 폼
+        ├── EduHistoryTable.tsx                 # 목록 테이블
+        ├── api.ts                              # API 호출
+        ├── columns.ts                          # 목록 컬럼 정의
+        ├── types.ts                            # 타입 정의
         └── App.css
 ```
